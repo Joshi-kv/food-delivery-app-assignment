@@ -33,8 +33,8 @@ urlpatterns = [
     # Customer app
     path("customer/", include('customer.urls')),
 
-    # # Delivery Partner app
-    # path("delivery/", include('delivery_partner.urls')),
+    # Delivery Partner app
+    path("delivery/", include('delivery_partner.urls')),
 
 ]
 
