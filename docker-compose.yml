@@ -17,7 +17,7 @@ services:
     command: daphne -b 0.0.0.0 -p 80 food_delivery_app.asgi:application
     restart: always
     volumes:
-      - db_data:/app/db.sqlite3
+      - ./db:/app/db
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
     ports:
@@ -33,4 +33,3 @@ services:
 
 volumes:
   redis_data:
-  db_data:

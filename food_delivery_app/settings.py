@@ -134,7 +134,7 @@ CHANNEL_LAYERS = {
 DATABASES = {
     "default": {
         "ENGINE": env('DB_ENGINE', default='django.db.backends.sqlite3'),
-        "NAME": BASE_DIR / env('DB_NAME', default='db.sqlite3'),
+        "NAME": BASE_DIR / env('DB_NAME', default='db/db.sqlite3'),
     }
 }
 
