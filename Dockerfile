@@ -24,9 +24,6 @@ COPY . /app/
 # Create directories for SQLite and media files
 RUN mkdir -p /app/data /app/staticfiles /app/media
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
-
 # Expose port 80
 EXPOSE 80
 
