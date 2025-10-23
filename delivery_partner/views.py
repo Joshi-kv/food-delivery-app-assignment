@@ -134,18 +134,23 @@ class UpdateBookingStatusView(PermissionRequiredMixin, MessageMixin, ActivityLog
 
         # Update booking
         booking.status = new_status
+        fields_to_update = ['status', 'updated_at']
 
         # Update timestamp based on status
         if new_status == 'started':
             booking.started_at = timezone.now()
+            fields_to_update.append('started_at')
         elif new_status == 'reached':
             booking.reached_at = timezone.now()
+            fields_to_update.append('reached_at')
         elif new_status == 'collected':
             booking.collected_at = timezone.now()
+            fields_to_update.append('collected_at')
         elif new_status == 'delivered':
             booking.delivered_at = timezone.now()
+            fields_to_update.append('delivered_at')
 
-        booking.save()
+        booking.save(update_fields=fields_to_update)
 
         # Log status change
         BookingStatusLog.objects.create(

@@ -241,15 +241,9 @@ $(document).ready(function() {
     $('#statusForm').on('submit', function() {
         showLoading();
     });
-
-    // Auto-refresh booking status every 30 seconds
-    setInterval(function() {
-        $.get('{% url "delivery_partner:api_booking_status" booking.id %}', function(data) {
-            if (data.status !== '{{ booking.status }}') {
-                location.reload();
-            }
-        });
-    }, 30000);
+    
+    // Ensure customer notes are always visible
+    $('.alert-info').show();
 });
 </script>
 {% endblock %}

@@ -11,12 +11,7 @@ function hideLoading() {
     $('#loadingOverlay').removeClass('show');
 }
 
-// Auto-hide messages after 5 seconds
-$(document).ready(function() {
-    setTimeout(function() {
-        $('.alert').fadeOut('slow');
-    }, 5000);
-});
+
 
 // CSRF token for AJAX requests
 function getCookie(name) {

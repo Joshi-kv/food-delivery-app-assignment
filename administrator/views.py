@@ -134,7 +134,7 @@ class AssignBookingView(PermissionRequiredMixin, MessageMixin, ActivityLogMixin,
         booking.delivery_partner = delivery_partner
         booking.status = 'assigned'
         booking.assigned_at = timezone.now()
-        booking.save()
+        booking.save(update_fields=['delivery_partner', 'status', 'assigned_at', 'updated_at'])
 
         # Log status change
         BookingStatusLog.objects.create(

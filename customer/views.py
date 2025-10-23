@@ -162,7 +162,7 @@ class CancelBookingView(PermissionRequiredMixin, MessageMixin, ActivityLogMixin,
         booking.status = 'cancelled'
         booking.cancelled_at = timezone.now()
         booking.cancellation_reason = cancellation_reason
-        booking.save()
+        booking.save(update_fields=['status', 'cancelled_at', 'cancellation_reason', 'updated_at'])
 
         # Log status change
         BookingStatusLog.objects.create(
