@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chat - Booking #{{ booking.id }} - Food Delivery App{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card chat-card">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">
+                            <i class="fa fa-comments me-2"></i>
+                            Chat - Booking #{{ booking.id }}
+                        </h5>
+                        <small>
+                            Chatting with: {{ other_user.get_full_name|default:other_user.mobile_number }}
+                        </small>
+                    </div>
+                    <div>
+                        {% if user.role == 'customer' %}
+                            <a href="{% url 'customer:view_booking' booking.id %}" class="btn btn-sm btn-light">
+                                <i class="fa fa-arrow-left me-1"></i>Back to Booking
+                            </a>
+                        {% elif user.role == 'delivery_partner' %}
+                            <a href="{% url 'delivery_partner:view_delivery' booking.id %}" class="btn btn-sm btn-light">
+                                <i class="fa fa-arrow-left me-1"></i>Back to Delivery
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <!-- Booking Info Bar -->
+                <div class="booking-info-bar p-3 bg-light border-bottom">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <small class="text-muted">Pickup:</small><br>
+                            <strong>{{ booking.pickup_address|truncatewords:5 }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">Delivery:</small><br>
+                            <strong>{{ booking.delivery_address|truncatewords:5 }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">Status:</small><br>
+                            <span class="badge bg-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages Container -->
+                <div class="chat-messages" id="chatMessages">
+                    {% for message in chat_messages %}
+                    <div class="message {% if message.sender == user %}message-sent{% else %}message-received{% endif %}" data-message-id="{{ message.id }}">
+                        <div class="message-content">
+                            <div class="message-header">
+                                <strong>{{ message.sender.get_full_name|default:message.sender.mobile_number }}</strong>
+                                <small class="text-muted ms-2">{{ message.created_at|date:"M d, H:i" }}</small>
+                            </div>
+                            <div class="message-text">{{ message.message }}</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="no-messages text-center text-muted py-5">
+                        <i class="fa fa-comments fa-3x mb-3"></i>
+                        <p>No messages yet. Start the conversation!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Message Input -->
+                <div class="chat-input p-3 border-top">
+                    <form id="chatForm" class="d-flex gap-2">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="messageInput" 
+                            placeholder="Type your message here..."
+                            autocomplete="off"
+                            maxlength="500"
+                        >
+                        <button type="submit" class="btn btn-primary" id="sendButton">
+                            <i class="fa fa-paper-plane me-1"></i>Send
+                        </button>
+                    </form>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <span id="connectionStatus" class="badge bg-secondary">
+                                <i class="fa fa-circle-notch fa-spin"></i> Connecting...
+                            </span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/chat.js' %}"></script>
+<script>
+    // Initialize chat with booking ID
+    const bookingId = {{ booking.id }};
+    const currentUserId = {{ user.id }};
+    const currentUserName = "{{ user.get_full_name|default:user.mobile_number }}";
+    
+    // Initialize WebSocket connection
+    initializeChat(bookingId, currentUserId, currentUserName);
+</script>
+{% endblock %}
+

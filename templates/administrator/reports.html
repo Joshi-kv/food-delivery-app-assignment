@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reports - Admin - Food Delivery App{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/administrator.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa fa-chart-bar me-2"></i>Reports & Analytics</h2>
+        <a href="{% url 'administrator:dashboard' %}" class="btn btn-outline-secondary">
+            <i class="fa fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fa fa-filter me-2"></i>Filter by Date Range</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="from_date" class="form-label">From Date</label>
+                    <input type="date" class="form-control" id="from_date" name="from_date" value="{{ from_date }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="to_date" class="form-label">To Date</label>
+                    <input type="date" class="form-control" id="to_date" name="to_date" value="{{ to_date }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label>
+                    <div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-search me-2"></i>Apply Filter
+                        </button>
+                        <a href="{% url 'administrator:reports' %}" class="btn btn-outline-secondary">
+                            <i class="fa fa-times me-2"></i>Clear
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Bookings</h6>
+                            <h3 class="mb-0">{{ total_bookings }}</h3>
+                        </div>
+                        <div class="text-primary">
+                            <i class="fa fa-shopping-bag fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Completed</h6>
+                            <h3 class="mb-0">{{ completed_bookings }}</h3>
+                        </div>
+                        <div class="text-success">
+                            <i class="fa fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Cancelled</h6>
+                            <h3 class="mb-0">{{ cancelled_bookings }}</h3>
+                        </div>
+                        <div class="text-danger">
+                            <i class="fa fa-times-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Pending</h6>
+                            <h3 class="mb-0">{{ pending_bookings }}</h3>
+                        </div>
+                        <div class="text-warning">
+                            <i class="fa fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Delivery Partners -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fa fa-trophy me-2"></i>Top Delivery Partners</h5>
+                </div>
+                <div class="card-body">
+                    {% if delivery_partner_stats %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Total</th>
+                                        <th>Completed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for dp in delivery_partner_stats %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>
+                                            <a href="{% url 'administrator:user_detail' dp.id %}">
+                                                {{ dp.get_full_name|default:dp.mobile_number }}
+                                            </a>
+                                        </td>
+                                        <td>{{ dp.total_deliveries }}</td>
+                                        <td>
+                                            <span class="badge bg-success">{{ dp.completed_deliveries }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No delivery partner data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Customers -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fa fa-users me-2"></i>Top Customers</h5>
+                </div>
+                <div class="card-body">
+                    {% if customer_stats %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Total Bookings</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for customer in customer_stats %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>
+                                            <a href="{% url 'administrator:user_detail' customer.id %}">
+                                                {{ customer.get_full_name|default:customer.mobile_number }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ customer.total_bookings }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No customer data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/administrator/dashboard.js' %}"></script>
+{% endblock %}
+

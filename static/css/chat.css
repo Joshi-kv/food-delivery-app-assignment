@@ -1,0 +1,269 @@
+/**
+ * Chat interface styles
+ */
+
+/* Chat Card */
+.chat-card {
+    height: calc(100vh - 150px);
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-card .card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Booking Info Bar */
+.booking-info-bar {
+    flex-shrink: 0;
+}
+
+/* Chat Messages Container */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #f8f9fc;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* No Messages State */
+.no-messages {
+    margin: auto;
+}
+
+/* Message Styles */
+.message {
+    margin-bottom: 15px;
+    display: flex;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-sent {
+    justify-content: flex-end;
+}
+
+.message-received {
+    justify-content: flex-start;
+}
+
+.message-content {
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 10px;
+    word-wrap: break-word;
+}
+
+.message-sent .message-content {
+    background-color: var(--primary-color);
+    color: white;
+    border-bottom-right-radius: 2px;
+}
+
+.message-received .message-content {
+    background-color: white;
+    color: #333;
+    border-bottom-left-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.message-header {
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+}
+
+.message-sent .message-header {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.message-received .message-header {
+    color: #666;
+}
+
+.message-text {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+/* Chat Input */
+.chat-input {
+    flex-shrink: 0;
+    background-color: white;
+}
+
+#messageInput {
+    border-radius: 25px;
+    padding: 10px 20px;
+}
+
+#sendButton {
+    border-radius: 25px;
+    padding: 10px 25px;
+    white-space: nowrap;
+}
+
+#sendButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Connection Status */
+#connectionStatus {
+    font-size: 0.75rem;
+}
+
+#connectionStatus.connected {
+    background-color: var(--success-color) !important;
+}
+
+#connectionStatus.disconnected {
+    background-color: var(--danger-color) !important;
+}
+
+#connectionStatus.connecting {
+    background-color: var(--warning-color) !important;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: white;
+    border-radius: 10px;
+    max-width: 70px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.typing-indicator span {
+    height: 8px;
+    width: 8px;
+    background-color: #999;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+    margin-right: 0;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .chat-card {
+        height: calc(100vh - 100px);
+    }
+
+    .message-content {
+        max-width: 85%;
+    }
+
+    .booking-info-bar .row {
+        font-size: 0.85rem;
+    }
+
+    #messageInput {
+        font-size: 0.9rem;
+    }
+}
+
+/* Message Time Tooltip */
+.message-time {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    margin-top: 3px;
+}
+
+/* Unread Message Indicator */
+.message.unread {
+    position: relative;
+}
+
+.message.unread::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+}
+
+/* Scroll to Bottom Button */
+.scroll-to-bottom {
+    position: absolute;
+    bottom: 80px;
+    right: 30px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.scroll-to-bottom:hover {
+    background-color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.scroll-to-bottom.show {
+    display: flex;
+}
+

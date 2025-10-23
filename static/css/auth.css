@@ -1,0 +1,40 @@
+/**
+ * Authentication pages styles
+ */
+
+/* Login page styles */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-card {
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.auth-card .card-body {
+    padding: 3rem;
+}
+
+/* OTP input styling */
+#otp {
+    letter-spacing: 0.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Mobile number input */
+#mobile_number {
+    font-size: 1.1rem;
+}
+
+/* Admin login specific */
+.border-primary {
+    border-color: var(--primary-color) !important;
+    border-width: 2px !important;
+}
+

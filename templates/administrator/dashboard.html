@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - Food Delivery App{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/administrator.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa fa-dashboard me-2"></i>Admin Dashboard</h2>
+        <div>
+            <a href="{% url 'administrator:booking_list' %}" class="btn btn-primary me-2">
+                <i class="fa fa-list me-2"></i>All Bookings
+            </a>
+            <a href="{% url 'administrator:user_list' %}" class="btn btn-info">
+                <i class="fa fa-users me-2"></i>All Users
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards Row 1 -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Bookings</h6>
+                            <h3 class="mb-0">{{ total_bookings }}</h3>
+                        </div>
+                        <div class="text-primary">
+                            <i class="fa fa-shopping-bag fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Pending</h6>
+                            <h3 class="mb-0">{{ pending_bookings }}</h3>
+                        </div>
+                        <div class="text-warning">
+                            <i class="fa fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Active</h6>
+                            <h3 class="mb-0">{{ active_bookings }}</h3>
+                        </div>
+                        <div class="text-info">
+                            <i class="fa fa-truck fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Completed</h6>
+                            <h3 class="mb-0">{{ completed_bookings }}</h3>
+                        </div>
+                        <div class="text-success">
+                            <i class="fa fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards Row 2 -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Customers</h6>
+                            <h3 class="mb-0">{{ total_customers }}</h3>
+                        </div>
+                        <div class="text-primary">
+                            <i class="fa fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Delivery Partners</h6>
+                            <h3 class="mb-0">{{ total_delivery_partners }}</h3>
+                        </div>
+                        <div class="text-info">
+                            <i class="fa fa-motorcycle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Today's Bookings</h6>
+                            <h3 class="mb-0">{{ today_bookings }}</h3>
+                        </div>
+                        <div class="text-warning">
+                            <i class="fa fa-calendar fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Today's Completed</h6>
+                            <h3 class="mb-0">{{ today_completed }}</h3>
+                        </div>
+                        <div class="text-success">
+                            <i class="fa fa-check-double fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Bookings -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fa fa-list me-2"></i>Recent Bookings</h5>
+            <a href="{% url 'administrator:booking_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body">
+            {% if bookings %}
+                <div class="table-responsive">
+                    <table class="table table-hover admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Delivery Partner</th>
+                                <th>Pickup</th>
+                                <th>Delivery</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td><strong>#{{ booking.id }}</strong></td>
+                                <td>
+                                    {{ booking.customer.get_full_name|default:booking.customer.mobile_number }}
+                                    <br>
+                                    <small class="text-muted">{{ booking.customer.mobile_number }}</small>
+                                </td>
+                                <td>
+                                    {% if booking.delivery_partner %}
+                                        {{ booking.delivery_partner.get_full_name|default:booking.delivery_partner.mobile_number }}
+                                        <br>
+                                        <small class="text-muted">{{ booking.delivery_partner.mobile_number }}</small>
+                                    {% else %}
+                                        <span class="text-muted">Not assigned</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ booking.pickup_address|truncatewords:3 }}</td>
+                                <td>{{ booking.delivery_address|truncatewords:3 }}</td>
+                                <td>
+                                    <span class="badge badge-status bg-{{ booking.status }}">
+                                        {{ booking.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ booking.created_at|date:"M d, H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'administrator:view_booking' booking.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fa fa-shopping-bag fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No bookings yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/administrator/dashboard.js' %}"></script>
+{% endblock %}
+

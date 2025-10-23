@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Deliveries - Delivery Partner{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>My Deliveries</h2>
+            </div>
+
+            <!-- Filter Form -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="status" class="form-label">Filter by Status</label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="">All Statuses</option>
+                                <option value="assigned" {% if status_filter == 'assigned' %}selected{% endif %}>Assigned</option>
+                                <option value="started" {% if status_filter == 'started' %}selected{% endif %}>Started</option>
+                                <option value="reached" {% if status_filter == 'reached' %}selected{% endif %}>Reached</option>
+                                <option value="collected" {% if status_filter == 'collected' %}selected{% endif %}>Collected</option>
+                                <option value="delivered" {% if status_filter == 'delivered' %}selected{% endif %}>Delivered</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">Filter</button>
+                            <a href="{% url 'delivery_partner:delivery_list' %}" class="btn btn-secondary">Clear</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Deliveries List -->
+            {% if bookings %}
+                <div class="row">
+                    {% for booking in bookings %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title">Booking #{{ booking.id }}</h5>
+                                    <span class="badge bg-{{ booking.status|default:'secondary' }}">
+                                        {{ booking.get_status_display }}
+                                    </span>
+                                </div>
+                                <p class="card-text">
+                                    <strong>Customer:</strong> {{ booking.customer.get_full_name }}<br>
+                                    <strong>Pickup:</strong> {{ booking.pickup_address|truncatewords:10 }}<br>
+                                    <strong>Delivery:</strong> {{ booking.delivery_address|truncatewords:10 }}<br>
+                                    <strong>Assigned:</strong> {{ booking.assigned_at|date:"M d, Y H:i" }}
+                                </p>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'delivery_partner:view_delivery' booking.id %}" class="btn btn-sm btn-primary">View Details</a>
+                                    {% if booking.status not in 'delivered' %}
+                                    <a href="{% url 'delivery_partner:chat' booking.id %}" class="btn btn-sm btn-info">Chat</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;&laquo;</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if status_filter %}&status={{ status_filter }}{% endif %}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;&raquo;</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <p class="text-center text-muted">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} 
+                        ({{ page_obj.paginator.count }} total deliveries)
+                    </p>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No deliveries found.
+                    {% if status_filter %}
+                        <a href="{% url 'delivery_partner:delivery_list' %}">Clear filter</a> to see all deliveries.
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

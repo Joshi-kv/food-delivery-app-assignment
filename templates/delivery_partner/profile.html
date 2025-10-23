@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Food Delivery App{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/delivery_partner.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fa fa-user me-2"></i>My Profile</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="profileForm">
+                    {% csrf_token %}
+                    
+                    <!-- Profile Picture -->
+                    <div class="text-center mb-4">
+                        {% if user.profile_pic %}
+                            <img src="{{ user.profile_pic.url }}" class="rounded-circle mb-3" width="150" height="150" alt="Profile Picture">
+                        {% else %}
+                            <i class="fa fa-user-circle fa-5x text-muted mb-3"></i>
+                        {% endif %}
+                        <div>
+                            <label for="profile_pic" class="btn btn-sm btn-outline-primary">
+                                <i class="fa fa-camera me-1"></i>Change Picture
+                            </label>
+                            <input type="file" class="d-none" id="profile_pic" name="profile_pic" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">
+                                <i class="fa fa-user me-1"></i>First Name
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="first_name" 
+                                name="first_name" 
+                                value="{{ user.first_name }}"
+                                placeholder="Enter your first name"
+                            >
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">
+                                <i class="fa fa-user me-1"></i>Last Name
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="last_name" 
+                                name="last_name" 
+                                value="{{ user.last_name }}"
+                                placeholder="Enter your last name"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="mobile_number" class="form-label">
+                            <i class="fa fa-phone me-1"></i>Mobile Number
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="mobile_number" 
+                            value="{{ user.mobile_number }}"
+                            disabled
+                        >
+                        <div class="form-text">Mobile number cannot be changed</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            <i class="fa fa-envelope me-1"></i>Email Address
+                        </label>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="email" 
+                            name="email" 
+                            value="{{ user.email }}"
+                            placeholder="Enter your email address"
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">
+                            <i class="fa fa-map-marker-alt me-1"></i>Address
+                        </label>
+                        <textarea 
+                            class="form-control" 
+                            id="address" 
+                            name="address" 
+                            rows="3"
+                            placeholder="Enter your address"
+                        >{{ user.address }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fa fa-calendar me-1"></i>Member Since
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            value="{{ user.date_joined|date:'M d, Y' }}"
+                            disabled
+                        >
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'delivery_partner:dashboard' %}" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left me-2"></i>Back
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-save me-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Preview profile picture before upload
+    $('#profile_pic').on('change', function(e) {
+        var file = e.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('.rounded-circle, .fa-user-circle').replaceWith(
+                    '<img src="' + e.target.result + '" class="rounded-circle mb-3" width="150" height="150" alt="Profile Picture">'
+                );
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    $('#profileForm').on('submit', function() {
+        showLoading();
+    });
+});
+</script>
+{% endblock %}
+

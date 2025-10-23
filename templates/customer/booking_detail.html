@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking #{{ booking.id }} - Food Delivery App{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/customer.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <!-- Booking Details Card -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fa fa-shopping-bag me-2"></i>Booking #{{ booking.id }}</h4>
+                <span class="badge badge-status bg-{{ booking.status }} fs-6">
+                    {{ booking.get_status_display }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted"><i class="fa fa-map-marker-alt me-2"></i>Pickup Address</h6>
+                        <p>{{ booking.pickup_address }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted"><i class="fa fa-home me-2"></i>Delivery Address</h6>
+                        <p>{{ booking.delivery_address }}</p>
+                    </div>
+                </div>
+
+                {% if booking.customer_notes %}
+                <div class="mb-3">
+                    <h6 class="text-muted"><i class="fa fa-sticky-note me-2"></i>Notes</h6>
+                    <p>{{ booking.customer_notes }}</p>
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted"><i class="fa fa-calendar me-2"></i>Created</h6>
+                        <p>{{ booking.created_at|date:"M d, Y H:i" }}</p>
+                    </div>
+                    {% if booking.delivery_partner %}
+                    <div class="col-md-6">
+                        <h6 class="text-muted"><i class="fa fa-user me-2"></i>Delivery Partner</h6>
+                        <p>
+                            {{ booking.delivery_partner.get_full_name|default:booking.delivery_partner.mobile_number }}
+                            <br>
+                            <small class="text-muted">{{ booking.delivery_partner.mobile_number }}</small>
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if booking.cancellation_reason %}
+                <div class="alert alert-danger mt-3">
+                    <h6><i class="fa fa-times-circle me-2"></i>Cancellation Reason</h6>
+                    <p class="mb-0">{{ booking.cancellation_reason }}</p>
+                    <small class="text-muted">Cancelled at: {{ booking.cancelled_at|date:"M d, Y H:i" }}</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Status Timeline -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fa fa-history me-2"></i>Status History</h5>
+            </div>
+            <div class="card-body">
+                {% if status_logs %}
+                <div class="timeline">
+                    {% for log in status_logs %}
+                    <div class="timeline-item mb-3">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <span class="badge bg-{{ log.status }} rounded-circle p-2">
+                                    <i class="fa fa-check"></i>
+                                </span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ log.get_status_display }}</h6>
+                                <p class="text-muted mb-1">
+                                    <small>
+                                        <i class="fa fa-user me-1"></i>{{ log.changed_by.get_full_name|default:log.changed_by.mobile_number }}
+                                        <i class="fa fa-clock ms-2 me-1"></i>{{ log.created_at|date:"M d, Y H:i" }}
+                                    </small>
+                                </p>
+                                {% if log.notes %}
+                                <p class="mb-0"><small>{{ log.notes }}</small></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No status history available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Chat Section (if available) -->
+        {% if booking.can_chat %}
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fa fa-comments me-2"></i>Chat with Delivery Partner</h5>
+                <a href="{% url 'customer:chat' booking.id %}" class="btn btn-sm btn-primary">
+                    <i class="fa fa-expand me-1"></i>Open Full Chat
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="chat-preview" style="max-height: 300px; overflow-y: auto;">
+                    {% if chat_messages %}
+                        {% for message in chat_messages|slice:":5" %}
+                        <div class="message mb-2 {% if message.sender == request.user %}text-end{% endif %}">
+                            <div class="d-inline-block p-2 rounded {% if message.sender == request.user %}bg-primary text-white{% else %}bg-light{% endif %}" style="max-width: 70%;">
+                                <small class="d-block fw-bold">{{ message.sender.get_full_name|default:message.sender.mobile_number }}</small>
+                                <p class="mb-0">{{ message.message }}</p>
+                                <small class="text-muted">{{ message.created_at|date:"H:i" }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% if chat_messages|length > 5 %}
+                        <p class="text-center text-muted">
+                            <a href="{% url 'customer:chat' booking.id %}">View all {{ chat_messages|length }} messages</a>
+                        </p>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted text-center">No messages yet. Start a conversation!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Actions Sidebar -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fa fa-cog me-2"></i>Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'customer:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fa fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                    
+                    {% if booking.can_chat %}
+                    <a href="{% url 'customer:chat' booking.id %}" class="btn btn-info">
+                        <i class="fa fa-comments me-2"></i>Chat with Delivery Partner
+                    </a>
+                    {% endif %}
+                    
+                    {% if can_cancel %}
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                        <i class="fa fa-times-circle me-2"></i>Cancel Booking
+                    </button>
+                    {% endif %}
+                </div>
+
+                <hr>
+
+                <div class="booking-info">
+                    <h6 class="text-muted mb-3">Booking Information</h6>
+                    <p class="mb-2">
+                        <small class="text-muted">Booking ID:</small><br>
+                        <strong>#{{ booking.id }}</strong>
+                    </p>
+                    <p class="mb-2">
+                        <small class="text-muted">Status:</small><br>
+                        <span class="badge bg-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                    </p>
+                    <p class="mb-2">
+                        <small class="text-muted">Created:</small><br>
+                        {{ booking.created_at|date:"M d, Y H:i" }}
+                    </p>
+                    {% if booking.assigned_at %}
+                    <p class="mb-2">
+                        <small class="text-muted">Assigned:</small><br>
+                        {{ booking.assigned_at|date:"M d, Y H:i" }}
+                    </p>
+                    {% endif %}
+                    {% if booking.delivered_at %}
+                    <p class="mb-2">
+                        <small class="text-muted">Delivered:</small><br>
+                        {{ booking.delivered_at|date:"M d, Y H:i" }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Booking Modal -->
+{% if can_cancel %}
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'customer:cancel_booking' booking.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>Are you sure you want to cancel this booking?</p>
+                    <div class="mb-3">
+                        <label for="cancellation_reason" class="form-label">Reason for cancellation:</label>
+                        <textarea class="form-control" id="cancellation_reason" name="cancellation_reason" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Cancel Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Auto-refresh booking status every 30 seconds
+    setInterval(function() {
+        $.get('{% url "customer:api_booking_status" booking.id %}', function(data) {
+            if (data.status !== '{{ booking.status }}') {
+                location.reload();
+            }
+        });
+    }, 30000);
+});
+</script>
+{% endblock %}
+

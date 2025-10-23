@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Booking - Food Delivery App{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/customer.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fa fa-plus-circle me-2"></i>Create New Booking</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" id="createBookingForm">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="pickup_address" class="form-label">
+                            <i class="fa fa-map-marker-alt me-1"></i>Pickup Address <span class="text-danger">*</span>
+                        </label>
+                        <textarea 
+                            class="form-control" 
+                            id="pickup_address" 
+                            name="pickup_address" 
+                            rows="3" 
+                            required
+                            placeholder="Enter the pickup address (e.g., Restaurant name, street, city)"
+                        ></textarea>
+                        <div class="form-text">Where should the delivery partner pick up the order?</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="delivery_address" class="form-label">
+                            <i class="fa fa-home me-1"></i>Delivery Address <span class="text-danger">*</span>
+                        </label>
+                        <textarea 
+                            class="form-control" 
+                            id="delivery_address" 
+                            name="delivery_address" 
+                            rows="3" 
+                            required
+                            placeholder="Enter your delivery address (street, building, apartment, city)"
+                        ></textarea>
+                        <div class="form-text">Where should the order be delivered?</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="customer_notes" class="form-label">
+                            <i class="fa fa-sticky-note me-1"></i>Additional Notes (Optional)
+                        </label>
+                        <textarea 
+                            class="form-control" 
+                            id="customer_notes" 
+                            name="customer_notes" 
+                            rows="3"
+                            placeholder="Any special instructions for the delivery partner? (e.g., gate code, floor number, contact preference)"
+                        ></textarea>
+                        <div class="form-text">Add any special instructions or notes for the delivery partner.</div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle me-2"></i>
+                        <strong>Note:</strong> Once you create the booking, an admin will assign it to a delivery partner. 
+                        You'll be able to chat with the delivery partner once the booking is assigned.
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'customer:dashboard' %}" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-check me-2"></i>Create Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#createBookingForm').on('submit', function(e) {
+        var pickupAddress = $('#pickup_address').val().trim();
+        var deliveryAddress = $('#delivery_address').val().trim();
+        
+        if (!pickupAddress || !deliveryAddress) {
+            e.preventDefault();
+            alert('Please provide both pickup and delivery addresses');
+            return false;
+        }
+        
+        showLoading();
+    });
+});
+</script>
+{% endblock %}
+

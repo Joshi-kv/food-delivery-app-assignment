@@ -1,0 +1,34 @@
+/**
+ * Customer-specific styles
+ */
+
+/* Customer dashboard specific styles */
+.customer-dashboard .booking-card {
+    transition: transform 0.2s;
+}
+
+.customer-dashboard .booking-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Booking status badges */
+.booking-status-pending {
+    background-color: var(--warning-color);
+}
+
+.booking-status-assigned {
+    background-color: var(--info-color);
+}
+
+.booking-status-started {
+    background-color: var(--primary-color);
+}
+
+.booking-status-delivered {
+    background-color: var(--success-color);
+}
+
+.booking-status-cancelled {
+    background-color: var(--danger-color);
+}
+

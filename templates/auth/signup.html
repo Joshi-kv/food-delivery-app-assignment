@@ -1,0 +1,137 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Sign Up - Food Delivery App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h1 class="h3 text-gray-900 mb-2">Create Account</h1>
+                    <p class="text-muted">Sign up as a Customer</p>
+                </div>
+
+                <form method="post" id="signupForm">
+                    {% csrf_token %}
+                    
+                    {% if step == 'verify_otp' %}
+                        <!-- OTP Verification Step -->
+                        <input type="hidden" name="step" value="verify_otp">
+                        <input type="hidden" name="mobile_number" value="{{ mobile_number }}">
+                        <input type="hidden" name="first_name" value="{{ first_name }}">
+                        <input type="hidden" name="last_name" value="{{ last_name }}">
+                        <input type="hidden" name="email" value="{{ email }}">
+                        <input type="hidden" name="address" value="{{ address }}">
+                        
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i>
+                            OTP sent to <strong>{{ mobile_number }}</strong>
+                            <br><small>For development, use OTP: <strong>1234</strong></small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="otp" class="form-label">Enter OTP <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-lg" id="otp" name="otp"
+                                   placeholder="Enter 4-digit OTP" maxlength="4" pattern="[0-9]{4}" required autofocus>
+                            <div class="invalid-feedback" id="otp_error"></div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                            <i class="fa fa-check"></i> Verify & Create Account
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-secondary w-100" onclick="window.location.href='{% url 'core:signup' %}'">
+                            <i class="fa fa-arrow-left"></i> Back
+                        </button>
+                    {% else %}
+                        <!-- Registration Form Step -->
+                        <input type="hidden" name="step" value="send_otp">
+
+                        <div class="mb-3">
+                            <label for="country_code" class="form-label">Country Code <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-lg" id="country_code" name="country_code" required>
+                                {% for cc in country_codes %}
+                                    <option value="{{ cc.code }}" {% if cc.code == selected_country_code %}selected{% endif %}>
+                                        {{ cc.flag }} {{ cc.code }} - {{ cc.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="mobile_number" class="form-label">Mobile Number <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control form-control-lg" id="mobile_number" name="mobile_number"
+                                   placeholder="Enter mobile number" value="{{ mobile_number|default:'' }}" required autofocus>
+                            <small class="text-muted" id="mobile_number_help">We'll send an OTP to verify your number</small>
+                            <div class="invalid-feedback" id="mobile_number_error"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-lg" id="first_name" name="first_name"
+                                       placeholder="First name" value="{{ first_name|default:'' }}" required>
+                                <div class="invalid-feedback" id="first_name_error"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control form-control-lg" id="last_name" name="last_name"
+                                       placeholder="Last name" value="{{ last_name|default:'' }}">
+                                <div class="invalid-feedback" id="last_name_error"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control form-control-lg" id="email" name="email"
+                                   placeholder="your.email@example.com" value="{{ email|default:'' }}">
+                            <small class="text-muted">Optional - for order updates</small>
+                            <div class="invalid-feedback" id="email_error"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Delivery Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" 
+                                      placeholder="Enter your delivery address"></textarea>
+                            <small class="text-muted">Optional - you can add this later</small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                            <i class="fa fa-paper-plane"></i> Send OTP
+                        </button>
+                        
+                        <div class="text-center">
+                            <hr>
+                            <p class="text-muted mb-2">Already have an account?</p>
+                            <a href="{% url 'core:login' %}" class="btn btn-outline-primary">
+                                <i class="fa fa-sign-in"></i> Login
+                            </a>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <hr>
+                            <p class="text-muted mb-2">Want to deliver with us?</p>
+                            <a href="{% url 'core:delivery_signup' %}" class="btn btn-outline-success">
+                                <i class="fa fa-motorcycle"></i> Sign up as Delivery Partner
+                            </a>
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center mt-3">
+            <p class="text-muted small">
+                By signing up, you agree to our Terms of Service and Privacy Policy
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/auth/login.js' %}"></script>
+{% endblock %}
+

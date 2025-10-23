@@ -1,0 +1,34 @@
+/**
+ * Administrator-specific styles
+ */
+
+/* Admin dashboard specific styles */
+.admin-dashboard .stat-card {
+    transition: transform 0.2s;
+}
+
+.admin-dashboard .stat-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Admin table styles */
+.admin-table {
+    font-size: 0.9rem;
+}
+
+.admin-table th {
+    background-color: #f8f9fc;
+    font-weight: 700;
+    color: var(--primary-color);
+    border-bottom: 2px solid #e3e6f0;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #f8f9fc;
+}
+
+/* Admin action buttons */
+.admin-actions .btn {
+    margin-right: 0.25rem;
+}
+

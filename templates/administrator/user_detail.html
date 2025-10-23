@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Details - Admin - Food Delivery App{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/administrator.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <!-- User Details Card -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fa fa-user me-2"></i>User Details</h4>
+                <span class="badge bg-primary">{{ user_obj.get_role_display }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-3 text-center">
+                        {% if user_obj.profile_pic %}
+                            <img src="{{ user_obj.profile_pic.url }}" class="rounded-circle mb-3" width="120" height="120" alt="Profile Picture">
+                        {% else %}
+                            <i class="fa fa-user-circle fa-5x text-muted mb-3"></i>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h5>{{ user_obj.get_full_name|default:"No name provided" }}</h5>
+                        <p class="text-muted mb-3">{{ user_obj.get_role_display }}</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted"><i class="fa fa-phone me-2"></i>Mobile Number</h6>
+                                <p>{{ user_obj.mobile_number }}</p>
+                            </div>
+                            
+                            {% if user_obj.email %}
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted"><i class="fa fa-envelope me-2"></i>Email</h6>
+                                <p>{{ user_obj.email }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        {% if user_obj.address %}
+                        <div class="mb-3">
+                            <h6 class="text-muted"><i class="fa fa-map-marker-alt me-2"></i>Address</h6>
+                            <p>{{ user_obj.address }}</p>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted"><i class="fa fa-calendar me-2"></i>Member Since</h6>
+                                <p>{{ user_obj.date_joined|date:"M d, Y" }}</p>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted"><i class="fa fa-clock me-2"></i>Last Login</h6>
+                                <p>{{ user_obj.last_login|date:"M d, Y H:i"|default:"Never" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="text-muted"><i class="fa fa-toggle-on me-2"></i>Status</h6>
+                            <p>
+                                {% if user_obj.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User's Bookings -->
+        {% if bookings %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fa fa-shopping-bag me-2"></i>
+                    {% if user_obj.role == 'customer' %}
+                        Customer's Bookings
+                    {% elif user_obj.role == 'delivery_partner' %}
+                        Delivery Partner's Deliveries
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                {% if user_obj.role == 'customer' %}
+                                    <th>Delivery Partner</th>
+                                {% else %}
+                                    <th>Customer</th>
+                                {% endif %}
+                                <th>Pickup</th>
+                                <th>Delivery</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td><strong>#{{ booking.id }}</strong></td>
+                                {% if user_obj.role == 'customer' %}
+                                    <td>
+                                        {% if booking.delivery_partner %}
+                                            {{ booking.delivery_partner.get_full_name|default:booking.delivery_partner.mobile_number }}
+                                        {% else %}
+                                            <span class="text-muted">Not assigned</span>
+                                        {% endif %}
+                                    </td>
+                                {% else %}
+                                    <td>{{ booking.customer.get_full_name|default:booking.customer.mobile_number }}</td>
+                                {% endif %}
+                                <td>{{ booking.pickup_address|truncatewords:3 }}</td>
+                                <td>{{ booking.delivery_address|truncatewords:3 }}</td>
+                                <td>
+                                    <span class="badge badge-status bg-{{ booking.status }}">
+                                        {{ booking.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ booking.created_at|date:"M d, H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'administrator:view_booking' booking.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Actions Sidebar -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fa fa-cog me-2"></i>Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'administrator:user_list' %}" class="btn btn-outline-secondary">
+                        <i class="fa fa-arrow-left me-2"></i>Back to Users
+                    </a>
+                    
+                    <a href="{% url 'administrator:dashboard' %}" class="btn btn-outline-primary">
+                        <i class="fa fa-dashboard me-2"></i>Dashboard
+                    </a>
+                </div>
+
+                <hr>
+
+                <div class="user-stats">
+                    <h6 class="text-muted mb-3">Statistics</h6>
+                    
+                    {% if user_obj.role == 'customer' %}
+                        <p class="mb-2">
+                            <small class="text-muted">Total Bookings:</small><br>
+                            <strong>{{ bookings|length }}</strong>
+                        </p>
+                        <p class="mb-2">
+                            <small class="text-muted">Completed:</small><br>
+                            <strong>{{ bookings|length }}</strong>
+                        </p>
+                    {% elif user_obj.role == 'delivery_partner' %}
+                        <p class="mb-2">
+                            <small class="text-muted">Total Deliveries:</small><br>
+                            <strong>{{ bookings|length }}</strong>
+                        </p>
+                        <p class="mb-2">
+                            <small class="text-muted">Completed:</small><br>
+                            <strong>{{ bookings|length }}</strong>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/administrator/dashboard.js' %}"></script>
+{% endblock %}
+

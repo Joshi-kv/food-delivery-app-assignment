@@ -1,0 +1,36 @@
+/**
+ * Delivery Partner-specific styles
+ */
+
+/* Delivery partner dashboard specific styles */
+.delivery-dashboard .delivery-card {
+    transition: transform 0.2s;
+}
+
+.delivery-dashboard .delivery-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Delivery status indicators */
+.delivery-status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.delivery-status-indicator.active {
+    background-color: var(--success-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
