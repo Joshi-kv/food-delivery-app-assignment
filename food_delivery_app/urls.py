@@ -27,14 +27,15 @@ urlpatterns = [
     # Core app (authentication and shared views)
     path("", include('core.urls')),
 
+    # Administrator app
+    path("admin-panel/", include('administrator.urls')),
+    
     # # Customer app
     # path("customer/", include('customer.urls')),
 
     # # Delivery Partner app
     # path("delivery/", include('delivery_partner.urls')),
 
-    # # Administrator app
-    # path("admin-panel/", include('administrator.urls')),
 ]
 
 # Serve media files in development
