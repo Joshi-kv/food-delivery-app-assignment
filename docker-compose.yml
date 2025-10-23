@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   redis:
     image: redis:7-alpine
@@ -19,7 +17,7 @@ services:
     command: daphne -b 0.0.0.0 -p 80 food_delivery_app.asgi:application
     restart: always
     volumes:
-      - db_data:/app/db.sqlite3   # Use a Docker volume for SQLite
+      - db_data:/app        # Use a volume for SQLite DB and allow write permissions
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
     ports:
@@ -35,4 +33,4 @@ services:
 
 volumes:
   redis_data:
-  db_data:   # New volume for SQLite
+  db_data:
