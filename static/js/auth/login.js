@@ -124,7 +124,7 @@ $(document).ready(function() {
         }
     });
 
-    // OTP input validation and auto-submit
+    // OTP input validation (auto-submit disabled)
     $('#otp').on('input', function() {
         // Only allow digits
         this.value = this.value.replace(/[^0-9]/g, '');
@@ -134,11 +134,6 @@ $(document).ready(function() {
         if (otp.length === 4) {
             $(this).removeClass('is-invalid').addClass('is-valid');
             $('#otp_error').hide();
-
-            // Auto-submit after a short delay
-            setTimeout(function() {
-                $('#loginForm, #signupForm, #deliverySignupForm').submit();
-            }, 500);
         } else if (otp.length > 0) {
             $(this).removeClass('is-valid').addClass('is-invalid');
             $('#otp_error').text('OTP must be 4 digits').show();
