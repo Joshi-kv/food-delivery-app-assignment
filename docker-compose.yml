@@ -19,7 +19,7 @@ services:
     command: daphne -b 0.0.0.0 -p 80 food_delivery_app.asgi:application
     restart: always
     volumes:
-      - ./db.sqlite3:/app/db.sqlite3
+      - db_data:/app/db.sqlite3   # Use a Docker volume for SQLite
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
     ports:
@@ -35,3 +35,4 @@ services:
 
 volumes:
   redis_data:
+  db_data:   # New volume for SQLite
