@@ -17,9 +17,9 @@ services:
     command: daphne -b 0.0.0.0 -p 80 food_delivery_app.asgi:application
     restart: always
     volumes:
-      - db_data:/app        # Use a volume for SQLite DB and allow write permissions
-      - ./staticfiles:/app/staticfiles
-      - ./media:/app/media
+      - ./db_data:/app            # SQLite DB container volume
+      - ./static:/app/static      # Source static folder for live changes
+      - ./media:/app/media        # Media folder
     ports:
       - "80:80"
     env_file:
